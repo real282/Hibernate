@@ -44,13 +44,12 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        String sqlDeleteUser = String.format("DELETE FROM users WHERE id = \' %s \'", id);
-        try (Statement statement = Util.getConnection().createStatement()) {
-            statement.execute(sqlDeleteUser);
+        String sqlDeleteUser = "DELETE FROM users WHERE id = ?";
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(sqlDeleteUser)) {
+            preparedStatement.setLong(1, id);
         } catch (SQLException e) {
 
         }
-
     }
 
     public List<User> getAllUsers() {
@@ -72,6 +71,12 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
+        String sqlCleanTable = "DELETE FROM users";
+        try {
+            Statement statement = Util.getConnection().createStatement();
+            statement.execute(sqlCleanTable);
+        } catch (SQLException throwables) {
 
+        }
     }
 }
