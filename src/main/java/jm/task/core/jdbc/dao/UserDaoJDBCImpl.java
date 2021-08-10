@@ -3,9 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,21 +12,18 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
-    private static Statement statement = Util.statement;
-
     public void createUsersTable() {
         String sqlCreate = "CREATE TABLE users (id INT AUTO_INCREMENT, name VARCHAR(30), lastName VARCHAR(30), age TINYINT, PRIMARY KEY (id))";
-        try {
+        try (Statement statement = Util.getConnection().createStatement()) {
             statement.execute(sqlCreate);
         } catch (SQLException e) {
 
         }
-
     }
 
     public void dropUsersTable() {
         String sqlDropTable = "DROP TABLE users";
-        try {
+        try (Statement statement = Util.getConnection().createStatement()) {
             statement.execute(sqlDropTable);
         } catch (Exception e) {
 
@@ -36,9 +31,13 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String sqlSaveUser = String.format("INSERT INTO users VALUES(DEFAULT, \'%s\', \'%s\', %d)", name, lastName, age);
-        try {
-            statement.execute(sqlSaveUser);
+        String sqlSaveUser = "INSERT INTO users VALUES(DEFAULT, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(sqlSaveUser)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setByte(3, age);
+            preparedStatement.execute();
+            System.out.println("User с именем – " + name + " добавлен в базу данных");
         } catch (SQLException e) {
 
         }
@@ -46,7 +45,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void removeUserById(long id) {
         String sqlDeleteUser = String.format("DELETE FROM users WHERE id = \' %s \'", id);
-        try {
+        try (Statement statement = Util.getConnection().createStatement()) {
             statement.execute(sqlDeleteUser);
         } catch (SQLException e) {
 
@@ -57,7 +56,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> listUser = new ArrayList<>();
         String sqlListUser = "SELECT * FROM users";
-        try {
+        try (Statement statement = Util.getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(sqlListUser);
             while (resultSet.next()) {
                 long id = resultSet.getLong("id");

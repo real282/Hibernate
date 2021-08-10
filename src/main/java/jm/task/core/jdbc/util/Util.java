@@ -7,16 +7,16 @@ public class Util {
     private static String userName = "root";
     private static String pass = "root";
 
-    public static Statement statement;
+    private static Connection connection;
 
-    static {
-        try {
-            Connection connection = DriverManager.getConnection(url, userName, pass);
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public static Connection getConnection() {
+        if (connection == null) {
+            try {
+                connection = DriverManager.getConnection(url, userName, pass);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+        return connection;
     }
-
-
 }
