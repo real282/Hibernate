@@ -2,11 +2,12 @@ package jm.task.core.jdbc.util;
 
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
 
 import java.sql.*;
-import java.util.Properties;
+
 
 public class Util {
     private static String url = "jdbc:mysql://localhost:3306/db_test?sslUse=false";
@@ -29,22 +30,16 @@ public class Util {
 
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
-            try {
-                Properties properties = new Properties();
-                Configuration configuration = new Configuration();
-
-                properties.setProperty(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-                properties.setProperty(Environment.URL, "jdbc:mysql://localhost:3306/db_test");
-                properties.setProperty(Environment.USER, "root");
-                properties.setProperty(Environment.PASS, "root");
-                properties.setProperty(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
-
-                configuration.setProperties(properties);
-                configuration.addAnnotatedClass(User.class);
-                sessionFactory = configuration.buildSessionFactory();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Configuration configuration = new Configuration()
+                    .setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver")
+                    .setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/db_test")
+                    .setProperty("hibernate.connection.username", "root")
+                    .setProperty("hibernate.connection.password", "root")
+                    .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+                    .addAnnotatedClass(User.class);
+            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                    .applySettings(configuration.getProperties()).build();
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
         }
         return sessionFactory;
     }
