@@ -32,9 +32,9 @@ public class Util {
         if (sessionFactory == null) {
             Configuration configuration = new Configuration()
                     .setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver")
-                    .setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/db_test")
-                    .setProperty("hibernate.connection.username", "root")
-                    .setProperty("hibernate.connection.password", "root")
+                    .setProperty("hibernate.connection.url", url)
+                    .setProperty("hibernate.connection.username", userName)
+                    .setProperty("hibernate.connection.password", pass)
                     .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
                     .addAnnotatedClass(User.class);
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
