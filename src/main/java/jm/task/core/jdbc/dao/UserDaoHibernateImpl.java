@@ -40,19 +40,20 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        Session session = Util.getSessionFactory().openSession();
-        Transaction tx = session.beginTransaction();
-        session.save(new User(name, lastName, age));
-        tx.commit();
-        session.close();
+        try (Session session = Util.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.save(new User(name, lastName, age));
+            tx.commit();
+        } catch (Exception ignore) {
+
+        }
     }
 
     @Override
     public void removeUserById(long id) {
         try (Session session = Util.getSessionFactory().openSession()) {
-            User user = (User) session.get(User.class, id);
             Transaction tx = session.beginTransaction();
-            session.delete(user);
+            session.delete(session.get(User.class, id));
             tx.commit();
         } catch (IllegalArgumentException ignore) {
 
@@ -61,9 +62,12 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public List<User> getAllUsers() {
-        Session session = Util.getSessionFactory().openSession();
-        List<User> users = session.createQuery("from User").list();
-        session.close();
+        List<User> users = new ArrayList<>();
+        try (Session session = Util.getSessionFactory().openSession()) {
+            users = session.createQuery("from User").list();
+        } catch (Exception ignore) {
+
+        }
         return users;
     }
 

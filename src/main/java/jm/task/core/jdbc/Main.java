@@ -15,8 +15,8 @@ public class Main {
         userService.saveUser("Kola", "Sidorov", (byte) 30);
         userService.saveUser("Nikita", "Nikitin", (byte) 23);
         userService.removeUserById(3);
-        List<User> user = userService.getAllUsers();
-        System.out.println(user.toString());
+        List<User> users = userService.getAllUsers();
+        System.out.println(users.toString());
         userService.cleanUsersTable();
         userService.dropUsersTable();
     }
